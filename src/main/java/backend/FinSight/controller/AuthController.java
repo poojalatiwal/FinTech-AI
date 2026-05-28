@@ -1,6 +1,7 @@
 package backend.FinSight.controller;
 
 import backend.FinSight.dto.LoginRequest;
+import backend.FinSight.dto.LoginResponse;
 import backend.FinSight.dto.RegisterRequest;
 import backend.FinSight.model.User;
 import backend.FinSight.service.AuthService;
@@ -28,12 +29,11 @@ public class AuthController {
 
     // LOGIN
     @PostMapping("/manual-login")
-    public User login(
+    public LoginResponse login(
             @RequestBody LoginRequest request) {
 
         return authService.login(request);
     }
-
     // GOOGLE LOGIN SUCCESS
     @GetMapping("/google/success")
     public Object googleLoginSuccess(

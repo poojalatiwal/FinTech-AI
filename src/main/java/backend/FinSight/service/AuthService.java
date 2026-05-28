@@ -1,9 +1,11 @@
 package backend.FinSight.service;
 
 import backend.FinSight.dto.LoginRequest;
+import backend.FinSight.dto.LoginResponse;
 import backend.FinSight.dto.RegisterRequest;
 import backend.FinSight.model.User;
 import backend.FinSight.repository.UserRepository;
+import backend.FinSight.security.JwtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +21,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     // REGISTER
 
@@ -67,7 +72,7 @@ public class AuthService {
 
     // LOGIN
 
-    public User login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
 
         User user = userRepository
                 .findByEmailOrUsername(
@@ -95,20 +100,19 @@ public class AuthService {
             );
         }
 
-        // ROLE CHECK
+        // GENERATE JWT TOKEN
 
-        if (request.getRole() == null ||
+        String token =
+                jwtService.generateToken(
+                        user.getUsername()
+                );
 
-                !user.getRole()
-                        .equalsIgnoreCase(
-                                request.getRole()
-                        )) {
+        // RETURN RESPONSE
 
-            throw new RuntimeException(
-                    "Invalid role"
-            );
-        }
-
-        return user;
+        return new LoginResponse(
+                token,
+                user.getRole(),
+                user.getUsername()
+        );
     }
 }
