@@ -24,6 +24,9 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
@@ -51,12 +54,20 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                .oauth2Login(Customizer.withDefaults())
+                // GOOGLE LOGIN
+
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2SuccessHandler)
+                )
+
+                // JWT FILTER
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
-                );
+                )
+
+                .formLogin(form -> form.disable());
 
         return http.build();
     }

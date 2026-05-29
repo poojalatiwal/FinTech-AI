@@ -1,6 +1,8 @@
 package backend.FinSight.controller;
 
+import backend.FinSight.dto.CategorySummaryResponse;
 import backend.FinSight.dto.ExpenseRequest;
+import backend.FinSight.dto.ExpenseSummaryResponse;
 import backend.FinSight.model.Expense;
 import backend.FinSight.service.ExpenseService;
 
@@ -57,5 +59,31 @@ public class ExpenseController {
         expenseService.deleteExpense(id);
 
         return "Expense deleted successfully";
+    }
+
+    // SUMMARY API
+
+    @GetMapping("/summary")
+    public ExpenseSummaryResponse getSummary(
+            Authentication authentication
+    ) {
+
+        String userId = authentication.getName();
+
+        return expenseService.getSummary(userId);
+    }
+
+    @GetMapping("/category/{category}")
+    public CategorySummaryResponse getCategorySummary(
+            @PathVariable String category,
+            Authentication authentication
+    ) {
+
+        String userId = authentication.getName();
+
+        return expenseService.getCategorySummary(
+                userId,
+                category
+        );
     }
 }

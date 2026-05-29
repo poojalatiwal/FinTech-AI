@@ -36,27 +36,61 @@ public class JwtAuthenticationFilter
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // SKIP JWT FILTER FOR AUTH ROUTES
+
+        if (
+                path.startsWith("/auth/")
+                        || path.startsWith("/oauth2/")
+                        || path.startsWith("/login/")
+        ) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader =
                 request.getHeader("Authorization");
 
         String username = null;
+
         String token = null;
 
-        // CHECK TOKEN
-        if (authHeader != null &&
-                authHeader.startsWith("Bearer ")) {
+        // CHECK AUTH HEADER
+
+        if (
+                authHeader != null
+                        && authHeader.startsWith("Bearer ")
+        ) {
 
             token = authHeader.substring(7);
 
-            username =
-                    jwtService.extractUsername(token);
+            try {
+
+                username =
+                        jwtService.extractUsername(token);
+
+            } catch (Exception e) {
+
+                response.setStatus(
+                        HttpServletResponse.SC_UNAUTHORIZED
+                );
+
+                response.getWriter().write("Invalid JWT Token");
+
+                return;
+            }
         }
 
         // SET AUTHENTICATION
-        if (username != null &&
-                SecurityContextHolder
+
+        if (
+                username != null
+                        && SecurityContextHolder
                         .getContext()
-                        .getAuthentication() == null) {
+                        .getAuthentication() == null
+        ) {
 
             User userDetails =
                     new User(

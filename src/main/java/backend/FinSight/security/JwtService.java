@@ -41,14 +41,10 @@ public class JwtService {
     // EXTRACT USERNAME
     public String extractUsername(String token) {
 
-        Claims claims = Jwts.parser()
-
+        return Jwts.parser()
                 .setSigningKey(SECRET.getBytes())
-
                 .parseClaimsJws(token)
-
-                .getBody();
-
-        return claims.getSubject();
+                .getBody()
+                .getSubject();
     }
 }
