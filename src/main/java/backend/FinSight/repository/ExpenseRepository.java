@@ -24,4 +24,8 @@ public interface ExpenseRepository
     List<Expense> findTop5ByUserIdOrderByDateDesc(
             String userId
     );
+
+    List<Expense> findByUserIdOrderByDateAsc(
+            String userId);
+
 }
