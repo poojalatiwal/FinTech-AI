@@ -9,6 +9,7 @@ import backend.FinSight.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -48,6 +49,42 @@ public class ExpenseService {
     ) {
 
         return expenseRepository.findByUserId(userId);
+    }
+
+    // UPDATE EXPENSE
+
+    public Expense updateExpense(
+            String id,
+            ExpenseRequest request,
+            String userId
+    ) {
+
+        Expense expense =
+                expenseRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Expense not found"
+                                )
+                        );
+
+        if (!expense.getUserId().equals(userId)) {
+
+            throw new RuntimeException(
+                    "Unauthorized access"
+            );
+        }
+
+        expense.setTitle(request.getTitle());
+
+        expense.setAmount(request.getAmount());
+
+        expense.setCategory(request.getCategory());
+
+        expense.setDescription(request.getDescription());
+
+        expense.setDate(request.getDate());
+
+        return expenseRepository.save(expense);
     }
 
     // DELETE EXPENSE
@@ -135,5 +172,68 @@ public class ExpenseService {
                 total,
                 expenses.size()
         );
+    }
+
+    // FILTER BY CATEGORY
+
+    public List<Expense> getExpensesByCategory(
+            String userId,
+            String category
+    ) {
+
+        return expenseRepository
+                .findByUserIdAndCategory(
+                        userId,
+                        category
+                );
+    }
+
+    // Monthly Expense
+    public List<Expense> getMonthlyExpenses(
+            String userId
+    ) {
+
+        LocalDate now = LocalDate.now();
+
+        LocalDate start =
+                now.withDayOfMonth(1);
+
+        LocalDate end =
+                now.withDayOfMonth(
+                        now.lengthOfMonth()
+                );
+
+        return expenseRepository
+                .findByUserIdAndDateBetween(
+                        userId,
+                        start,
+                        end
+                );
+    }
+
+    // TOTAL SPENDING
+
+    public double getTotalExpenses(
+            String userId
+    ) {
+
+        List<Expense> expenses =
+                expenseRepository.findByUserId(userId);
+
+        return expenses.stream()
+                .mapToDouble(Expense::getAmount)
+                .sum();
+    }
+
+    // RECENT EXPENSES
+
+    public List<Expense> getRecentExpenses(
+            String userId
+    ) {
+
+        return expenseRepository
+                .findTop5ByUserIdOrderByDateDesc(
+                        userId
+                );
     }
 }

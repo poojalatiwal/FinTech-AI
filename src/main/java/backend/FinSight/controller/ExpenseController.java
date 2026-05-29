@@ -49,6 +49,24 @@ public class ExpenseController {
         return expenseService.getExpenses(userId);
     }
 
+    // UPDATE EXPENSE
+
+    @PutMapping("/{id}")
+    public Expense updateExpense(
+            @PathVariable String id,
+            @RequestBody ExpenseRequest request,
+            Authentication authentication
+    ) {
+
+        String userId = authentication.getName();
+
+        return expenseService.updateExpense(
+                id,
+                request,
+                userId
+        );
+    }
+
     // DELETE EXPENSE
 
     @DeleteMapping("/{id}")
@@ -73,7 +91,8 @@ public class ExpenseController {
         return expenseService.getSummary(userId);
     }
 
-    @GetMapping("/category/{category}")
+    //Category Summary
+    @GetMapping("/category-summary/{category}")
     public CategorySummaryResponse getCategorySummary(
             @PathVariable String category,
             Authentication authentication
@@ -85,5 +104,61 @@ public class ExpenseController {
                 userId,
                 category
         );
+    }
+
+    // Category Filter
+    @GetMapping("/category/{category}")
+    public List<Expense> getByCategory(
+            @PathVariable String category,
+            Authentication authentication
+    ) {
+
+        String userId =
+                authentication.getName();
+
+        return expenseService
+                .getExpensesByCategory(
+                        userId,
+                        category
+                );
+    }
+
+    //Monthly Expense
+    @GetMapping("/monthly")
+    public List<Expense> getMonthlyExpenses(
+            Authentication authentication
+    ) {
+
+        String userId =
+                authentication.getName();
+
+        return expenseService
+                .getMonthlyExpenses(userId);
+    }
+
+    // Total Spending
+    @GetMapping("/total")
+    public double getTotalExpenses(
+            Authentication authentication
+    ) {
+
+        String userId =
+                authentication.getName();
+
+        return expenseService
+                .getTotalExpenses(userId);
+    }
+
+    // Recent Expenses
+    @GetMapping("/recent")
+    public List<Expense> getRecentExpenses(
+            Authentication authentication
+    ) {
+
+        String userId =
+                authentication.getName();
+
+        return expenseService
+                .getRecentExpenses(userId);
     }
 }
