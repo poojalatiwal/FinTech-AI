@@ -19,6 +19,8 @@ public class Expense {
 
     private String category;
 
+    private boolean debtRelated;
+
     private String description;
 
     private LocalDate date;

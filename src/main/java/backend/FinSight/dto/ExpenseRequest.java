@@ -13,6 +13,8 @@ public class ExpenseRequest {
 
     private String category;
 
+    private boolean debtRelated;
+
     private String description;
 
     private LocalDate date;

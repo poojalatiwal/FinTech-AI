@@ -33,6 +33,8 @@ public class ExpenseService {
 
         expense.setCategory(request.getCategory());
 
+        expense.setDebtRelated( request.isDebtRelated() );
+
         expense.setDescription(request.getDescription());
 
         expense.setDate(request.getDate());
@@ -79,6 +81,8 @@ public class ExpenseService {
         expense.setAmount(request.getAmount());
 
         expense.setCategory(request.getCategory());
+
+        expense.setDebtRelated( request.isDebtRelated() );
 
         expense.setDescription(request.getDescription());
 

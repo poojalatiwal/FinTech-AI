@@ -37,6 +37,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'net.sourceforge.tess4j:tess4j:5.8.0'
 	implementation 'com.google.cloud:google-cloud-vision:3.39.0'
+	implementation 'com.itextpdf:itextpdf:5.5.13.3'
 }
 
 tasks.named('test') {
