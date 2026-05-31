@@ -4,8 +4,10 @@ import backend.FinSight.dto.CategorySummaryResponse;
 import backend.FinSight.dto.ExpenseRequest;
 import backend.FinSight.dto.ExpenseSummaryResponse;
 import backend.FinSight.model.Expense;
+import backend.FinSight.model.User;
 import backend.FinSight.repository.ExpenseRepository;
 
+import backend.FinSight.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,10 @@ public class ExpenseService {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+
+    @Autowired private NotificationService notificationService;
+    @Autowired private EmailService emailService;
+    @Autowired private UserRepository userRepository;
 
     // ADD EXPENSE
 
@@ -33,16 +39,79 @@ public class ExpenseService {
 
         expense.setCategory(request.getCategory());
 
-        expense.setDebtRelated( request.isDebtRelated() );
+        expense.setDebtRelated(
+                request.isDebtRelated()
+        );
 
-        expense.setDescription(request.getDescription());
+        expense.setDescription(
+                request.getDescription()
+        );
 
         expense.setDate(request.getDate());
 
         expense.setUserId(userId);
 
-        return expenseRepository.save(expense);
+        Expense savedExpense =
+                expenseRepository.save(expense);
+
+        // GET USER EMAIL
+        User user =
+                userRepository.findByUsername(userId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "User not found"
+                                )
+                        );
+
+        String email =
+                user.getEmail();
+        // HIGH EXPENSE ALERT
+
+        if (expense.getAmount() > 10000) {
+
+            String message =
+                    "High expense detected: ₹"
+                            + expense.getAmount();
+
+            // APP NOTIFICATION
+
+            notificationService.createNotification(
+                    userId,
+                    message
+            );
+
+            // EMAIL ALERT
+
+            emailService.sendEmail(
+                    email,
+                    "FinSight High Expense Alert",
+                    message
+            );
+        }
+
+        // FOOD SPENDING ALERT
+        if (expense.getCategory()
+                .equalsIgnoreCase("Food")
+                && expense.getAmount() > 3000) {
+
+            String message =
+                    "Food spending exceeded healthy limit.";
+
+            notificationService.createNotification(
+                    userId,
+                    message
+            );
+
+            emailService.sendEmail(
+                    email,
+                    "FinSight Food Alert",
+                    message
+            );
+        }
+
+        return savedExpense;
     }
+
 
     // GET USER EXPENSES
 
