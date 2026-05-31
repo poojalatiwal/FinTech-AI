@@ -104,7 +104,8 @@ public class AuthService {
 
         String token =
                 jwtService.generateToken(
-                        user.getUsername()
+                        user.getUsername(),
+                        user.getRole()
                 );
 
         // RETURN RESPONSE

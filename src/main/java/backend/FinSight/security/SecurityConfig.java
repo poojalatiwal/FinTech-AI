@@ -51,6 +51,10 @@ public class SecurityConfig {
                                 "/login/**"
                         ).permitAll()
 
+                        // ADMIN ROUTES
+                        .requestMatchers( "/admin/**" )
+                        .authenticated()
+
                         .anyRequest().authenticated()
                 )
 

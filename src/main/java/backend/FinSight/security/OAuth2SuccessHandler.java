@@ -83,7 +83,8 @@ public class OAuth2SuccessHandler
 
         String token =
                 jwtService.generateToken(
-                        user.getUsername()
+                        user.getUsername(),
+                        user.getRole()
                 );
 
         // RETURN TOKEN RESPONSE
